@@ -2,7 +2,7 @@ const mongoose = require('../db/conn')
 const {Schema} = mongoose
 
 const User = mongoose.model('User', new Schema({
-    nome: {
+    name: {
         type: String,
         required: true
     },
@@ -25,4 +25,4 @@ const User = mongoose.model('User', new Schema({
 }, {timestamps: true},
 ))
 
-module.exports - User
+module.exports = User

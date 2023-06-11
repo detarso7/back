@@ -1,4 +1,6 @@
-const Users = require('../models/Users')
+const User = require('../models/Users')
+const bcrypt = require('bcrypt')
+const createUserToken = require('../helpers/create-user-token')
 
 module.exports = class UserController{
     static async register (req, res){
@@ -33,11 +35,35 @@ module.exports = class UserController{
 
         //Check if user exist
 
-        const checkUser = User.findOnde({email: email})
+        const checkUser = await User.findOne({email: email})
 
         if (checkUser){
             res.status(422).json({messagem: 'O email já está cadastrado. Utilize outro email'})
         }
 
+        //Password create
+
+        const salt = await bcrypt.genSalt(12)
+        const hashPassord = await bcrypt.hash(password, salt)
+
+        // Create User
+
+        const user = new User({
+            name,
+            email,
+            phone,
+            password: hashPassord
+        })
+
+        try {
+
+            const newUser = await user.save()
+            await createUserToken(newUser, req, res)
+
+        } catch (error) {
+
+            res.status(500).json({message: error})
+
+        }
     }
 }
